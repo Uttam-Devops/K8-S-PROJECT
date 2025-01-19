@@ -1,0 +1,39 @@
+
+
+CREATE DATABASE flask_db;
+
+USE flask_db;
+
+CREATE TABLE messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    message VARCHAR(255) NOT NULL
+);
+
+
+
+
+INSERT INTO messages (message) VALUES ('Hello, World!');
+
+from flask import Flask, jsonify
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+
+# SQLAlchemy Configuration
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:your_password@localhost/flask_db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+# Define a Model
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    message = db.Column(db.String(255), nullable=False)
+
+@app.route("/")
+def hello():
+    message = Message.query.first()
+    return message.message if message else "No messages found!"
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8000)
+
